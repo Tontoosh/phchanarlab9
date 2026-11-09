@@ -98,4 +98,15 @@ class ScholarshipCalculatorTest {
     void scholarshipReturnsZeroForLowGpa() {
         assertEquals(0, calculator.scholarship(2.9, 16, false));
     }
+
+    // Хэсэг C: давталтыг нэг болон олон удаа гүйцэтгэх зааг.
+    @Test
+    void gpaAveragesSingleGrade() {
+        assertEquals(4.0, calculator.gpa(new double[]{95}), 1e-9);
+    }
+
+    @Test
+    void gpaAveragesSeveralGrades() {
+        assertEquals(2.5, calculator.gpa(new double[]{95, 85, 75, 65}), 1e-9);
+    }
 }
