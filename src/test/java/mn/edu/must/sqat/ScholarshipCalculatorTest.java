@@ -3,6 +3,7 @@ package mn.edu.must.sqat;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ScholarshipCalculatorTest {
 
@@ -32,5 +33,69 @@ class ScholarshipCalculatorTest {
     @Test
     void basicScholarshipForEligibleGpa() {
         assertEquals(50, calculator.scholarship(3.1, 10, false));
+    }
+
+    // Хэсэг B: алдааны замууд болон үлдсэн салаанууд.
+    @Test
+    void letterGradeRejectsNegativeScore() {
+        assertThrows(IllegalArgumentException.class, () -> calculator.letterGrade(-1));
+    }
+
+    @Test
+    void letterGradeRejectsScoreAbove100() {
+        assertThrows(IllegalArgumentException.class, () -> calculator.letterGrade(101));
+    }
+
+    @Test
+    void gpaUsesAllLetterGrades() {
+        assertEquals(2.0, calculator.gpa(new double[]{95, 85, 75, 65, 55}), 1e-9);
+    }
+
+    @Test
+    void gpaRejectsNullScores() {
+        assertThrows(IllegalArgumentException.class, () -> calculator.gpa(null));
+    }
+
+    @Test
+    void gpaRejectsEmptyScores() {
+        assertThrows(IllegalArgumentException.class, () -> calculator.gpa(new double[]{}));
+    }
+
+    @Test
+    void scholarshipRejectsNegativeGpa() {
+        assertThrows(IllegalArgumentException.class,
+                () -> calculator.scholarship(-0.1, 15, false));
+    }
+
+    @Test
+    void scholarshipRejectsGpaAboveFour() {
+        assertThrows(IllegalArgumentException.class,
+                () -> calculator.scholarship(4.1, 15, false));
+    }
+
+    @Test
+    void scholarshipRejectsNegativeCredits() {
+        assertThrows(IllegalArgumentException.class,
+                () -> calculator.scholarship(3.9, -1, false));
+    }
+
+    @Test
+    void scholarshipReturnsZeroForViolation() {
+        assertEquals(0, calculator.scholarship(3.9, 16, true));
+    }
+
+    @Test
+    void fullScholarshipRequiresEnoughCredits() {
+        assertEquals(70, calculator.scholarship(3.9, 14, false));
+    }
+
+    @Test
+    void partialScholarshipRequiresEnoughCredits() {
+        assertEquals(50, calculator.scholarship(3.5, 11, false));
+    }
+
+    @Test
+    void scholarshipReturnsZeroForLowGpa() {
+        assertEquals(0, calculator.scholarship(2.9, 16, false));
     }
 }
