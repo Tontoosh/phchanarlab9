@@ -109,4 +109,40 @@ class ScholarshipCalculatorTest {
     void gpaAveragesSeveralGrades() {
         assertEquals(2.5, calculator.gpa(new double[]{95, 85, 75, 65}), 1e-9);
     }
+
+    // Хэсэг D: спецификацийн зааг утгууд.
+    @Test
+    void letterGradeReturnsDAt60() {
+        assertEquals("D", calculator.letterGrade(60));
+    }
+
+    @Test
+    void letterGradeReturnsFAt59Point99() {
+        assertEquals("F", calculator.letterGrade(59.99));
+    }
+
+    @Test
+    void letterGradeReturnsDAt69Point99() {
+        assertEquals("D", calculator.letterGrade(69.99));
+    }
+
+    @Test
+    void letterGradeReturnsFAt0() {
+        assertEquals("F", calculator.letterGrade(0));
+    }
+
+    @Test
+    void letterGradeReturnsAAt100() {
+        assertEquals("A", calculator.letterGrade(100));
+    }
+
+    @Test
+    void letterGradeReturnsBAt89Point99() {
+        assertEquals("B", calculator.letterGrade(89.99));
+    }
+
+    @Test
+    void letterGradeReturnsAAt90() {
+        assertEquals("A", calculator.letterGrade(90));
+    }
 }

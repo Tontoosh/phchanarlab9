@@ -145,3 +145,116 @@ CSV-д **`BRANCH_MISSED = 0`**, **`LINE_MISSED = 0`** болсон.
 
 Засварлах боломжтой CFG зураг болон README-ийн тайлбарыг бэлтгэх
 
+## Хэсэг C: Давталтын заагийн тестүүд
+
+`gpa()`-ийн давталтад 0 / 1 / 2+ дүрмийг дараах байдлаар шалгасан.
+Хоосон болон `null` массивын тестүүд B хэсгээс байгаа тул тэдгээрийг
+хэвээр ашиглаж, нэг болон олон дүнтэй массивын хоёр тест нэмсэн.
+
+| Давталтын зааг | Тестийн нэр | Оролт | Хүлээгдэж буй үр дүн |
+| --- | --- | --- | --- |
+| 0 удаа | `gpaRejectsEmptyScores` | `[]` | `assertThrows`: `IllegalArgumentException` |
+| `null` оролт | `gpaRejectsNullScores` | `null` | `assertThrows`: `IllegalArgumentException` |
+| 1 удаа | `gpaAveragesSingleGrade` | `[95]` | `4.0` |
+| 2+ удаа | `gpaAveragesSeveralGrades` | `[95, 85, 75, 65]` | `2.5` |
+
+### Ажиллуулалт ба үр дүн
+
+```bash
+mvn verify 2>&1 | tee results/mvn-verify-C.txt
+cp target/site/jacoco/jacoco.csv results/jacoco-C.csv
+```
+
+**BUILD SUCCESS** — Tests run: **19**, Failures: **0**, Errors: **0**, Skipped: **0**.
+Гаралт: [results/mvn-verify-C.txt](results/mvn-verify-C.txt).
+Хамралтын CSV: [results/jacoco-C.csv](results/jacoco-C.csv).
+
+| Хэмжүүр | Хамрагдсан | Хамрагдаагүй | Нийт | Хамралт |
+| --- | ---: | ---: | ---: | ---: |
+| Line | 25 | 0 | 25 | 100.00% |
+| Branch | 41 | 0 | 41 | 100.00% |
+
+### Хамралт өсөхгүй ч хэрэгтэй шалтгаан
+
+B хэсэгт давталтын оролт, гаралт болон бүх салаа аль хэдийн хамрагдсан тул
+эдгээр тест хамралтыг өсгөхгүй ч 0, 1, олон элементтэй оролтын ялгаатай
+үйлдлийг тусад нь баталгаажуулна.
+Ингэснээр хоосон ба `null` оролтыг зөв няцаах, нэг элементийн дүнг зөв
+буцаах, олон дүнг зөв нэмж элементүүдийн тоонд хуваах шаардлагыг шалгаж,
+давталтын эхлэл, төгсгөл болон голч тооцох алдааг илрүүлэх боломж нэмэгдэнэ.
+
+
+## Хэсэг D: Хамралт 100% — гэхдээ алдаа амьд
+
+### Зааг утгын тестүүд
+
+Спецификацийн дагуу дараах долоон тестийг нэмж, нийт 26 тест болсон.
+
+| Тестийн нэр | Оноо | Хүлээгдэж буй дүн |
+| --- | ---: | --- |
+| `letterGradeReturnsDAt60` | `60` | `"D"` |
+| `letterGradeReturnsFAt59Point99` | `59.99` | `"F"` |
+| `letterGradeReturnsDAt69Point99` | `69.99` | `"D"` |
+| `letterGradeReturnsFAt0` | `0` | `"F"` |
+| `letterGradeReturnsAAt100` | `100` | `"A"` |
+| `letterGradeReturnsBAt89Point99` | `89.99` | `"B"` |
+| `letterGradeReturnsAAt90` | `90` | `"A"` |
+
+### Засварын өмнөх уналт
+
+```bash
+mvn test 2>&1 | tee results/mvn-test-D-fail.txt
+```
+
+Засварын өмнө Tests run: **26**, Failures: **1**, Errors: **0**, Skipped: **0**
+гарсан. Унасан тест нь **`letterGradeReturnsDAt60`** байсан.
+Бодит гаралт: [results/mvn-test-D-fail.txt](results/mvn-test-D-fail.txt).
+
+```text
+letterGradeReturnsDAt60: expected: <D> but was: <F>
+```
+
+### Алдааны засвар
+
+`ScholarshipCalculator.java`-ийн 26-р мөрөнд 60 оноог D дүнд багтаахын тулд
+харьцуулах операторыг өөрчилсөн.
+
+```diff
+-        if (score > 60)  return "D";
++        if (score >= 60) return "D";
+```
+
+Засварын тусдаа commit-д бэлдсэн тайлбар:
+`D: 60 онооны заагийн алдааг засах`.
+
+### Эцсийн ажиллуулалт ба хамралт
+
+```bash
+mvn verify 2>&1 | tee results/mvn-verify-final.txt
+cp target/site/jacoco/jacoco.csv results/jacoco-final.csv
+```
+
+**BUILD SUCCESS** — Tests run: **26**, Failures: **0**, Errors: **0**, Skipped: **0**.
+Бүтэн гаралт: [results/mvn-verify-final.txt](results/mvn-verify-final.txt).
+Хамралтын CSV: [results/jacoco-final.csv](results/jacoco-final.csv).
+
+| Хэмжүүр | Хамрагдсан | Хамрагдаагүй | Нийт | Хамралт |
+| --- | ---: | ---: | ---: | ---: |
+| Line | 25 | 0 | 25 | 100.00% |
+| Branch | 41 | 0 | 41 | 100.00% |
+
+Эцсийн CSV-д **`BRANCH_MISSED = 0`**, **`LINE_MISSED = 0`** байна.
+
+### Гол дүгнэлт
+
+B болон C хэсэгт Line, Branch хамралт 100% болсон ч яг 60 оноог шалгаагүй
+учраас зааг утгын алдаа илрээгүй үлдсэн.
+`score > 60` ба `score >= 60` нь хоёулаа үнэн, худал гэсэн ижил салаатай
+тул хамралтын тоо эдгээр операторын ялгааг илэрхийлэхгүй.
+Өмнөх тестүүд D болон F замуудыг 65, 55 оноогоор дайрсан учраас 60 онооны
+буруу хариуг харуулаагүй.
+`letterGrade(60)` гэсэн заагийн тест л D-ийн оронд F буцааж байгааг илрүүлсэн.
+Код хамралт нь ямар мөр, салаа гүйцэтгэгдсэнийг хэмждэг боловч бүх оролтын
+хариу спецификацитай тохирч байгааг нотолдоггүй.
+Иймээс хамралтын хэмжилтийг зааг утга болон хүлээгдэж буй үр дүнг
+баталгаажуулах тестүүдтэй хамтад нь ашиглах шаардлагатай.
